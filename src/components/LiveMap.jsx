@@ -80,7 +80,7 @@ export default function LiveMap({
   setAutoCenter,
   isStale
 }) {
-  const [mapStyle, setMapStyle] = useState('dark'); // 'dark' | 'standard'
+  const [mapStyle, setMapStyle] = useState('dark'); // 'dark' | 'satellite' | 'street'
   const [showFootprint, setShowFootprint] = useState(true);
   const [showGroundTrack, setShowGroundTrack] = useState(true);
 
@@ -96,9 +96,26 @@ export default function LiveMap({
     return segmentTrackAcrossDateLine(trackHistory);
   }, [trackHistory, showGroundTrack]);
 
-  // Tile layers
-  const darkMatterTileUrl = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
-  const standardTileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}.png';
+  // Tile presets (100% free, public, zero API keys required)
+  const TILE_LAYERS = {
+    dark: {
+      url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+      attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
+      label: 'Dark Canvas'
+    },
+    satellite: {
+      url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+      attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP',
+      label: 'Satellite'
+    },
+    street: {
+      url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      label: 'OpenStreetMap'
+    }
+  };
+
+  const activeTile = TILE_LAYERS[mapStyle] || TILE_LAYERS.dark;
 
   return (
     <div className="relative w-full h-[450px] sm:h-[520px] lg:h-[600px] rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 shadow-2xl">
@@ -116,8 +133,9 @@ export default function LiveMap({
 
         {/* Tile Layer */}
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-          url={mapStyle === 'dark' ? darkMatterTileUrl : standardTileUrl}
+          key={mapStyle}
+          attribution={activeTile.attribution}
+          url={activeTile.url}
           noWrap={false}
         />
 
@@ -210,14 +228,20 @@ export default function LiveMap({
           <span>{autoCenter ? 'Tracking ISS' : 'Free Camera'}</span>
         </button>
 
-        {/* Toggle Dark/Standard Tiles */}
+        {/* Toggle Map Tiles: Dark -> Satellite -> Street */}
         <button
-          onClick={() => setMapStyle(mapStyle === 'dark' ? 'standard' : 'dark')}
-          title="Toggle Map Style"
+          onClick={() => {
+            setMapStyle((prev) => {
+              if (prev === 'dark') return 'satellite';
+              if (prev === 'satellite') return 'street';
+              return 'dark';
+            });
+          }}
+          title="Switch Map Tiles (100% Free - Dark Canvas / Satellite / OSM)"
           className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold bg-slate-900/90 hover:bg-slate-800/90 text-slate-300 border border-slate-700/70 backdrop-blur-md transition-all shadow-lg cursor-pointer"
         >
           <Layers className="w-4 h-4 text-sky-400" />
-          <span>{mapStyle === 'dark' ? 'Dark Map' : 'OSM Street'}</span>
+          <span>{activeTile.label}</span>
         </button>
 
         {/* Toggle Footprint Circle */}

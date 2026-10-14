@@ -172,6 +172,15 @@ curl.exe -i -s http://api.open-notify.org/iss-now.json
   - Ground Track: Stores past positions and maps them as illuminated dual polylines (soft cyan glow + dashed core line).
   - Horizon Footprint: Circular coverage boundary representing direct line-of-sight communication radius.
 
+### Tile Provider Policy Change & Real-World Fix
+* **Issue Encountered in Browser:** When running the application, the CartoDB Dark Matter tiles (`cartocdn.com/dark_all`) displayed a prominent diagonal watermark across every tile: `"API KEY REQUIRED carto.com/basemaps/apikey"`. CartoDB recently instituted an API key requirement on their previously open tile endpoints.
+* **Diagnosis:** Inspected the tile request headers and response images. Confirmed that Carto's public tile server now returns watermarked tiles unless a paid/registered API token is provided.
+* **Solution:** Switched to truly 100% free, unauthenticated, zero-key geospatial tile providers:
+  1. **Esri Dark Canvas:** `https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}` — perfectly matches the space mission control theme with crisp zero-watermark vector-derived tiles.
+  2. **Esri World Imagery (Satellite):** `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}` — actual satellite orbital photography from space.
+  3. **OpenStreetMap Standard:** `https://tile.openstreetmap.org/{z}/{x}/{y}.png` — reliable fallback community tiles.
+* **Verification:** Re-tested in the browser. Watermarks completely disappeared, and students can now cycle between Dark Canvas, Satellite, and OSM with zero API keys.
+
 ### Antimeridian Crossing Bug & Fix
 * **Issue:** When the ISS crosses the 180° meridian (e.g. longitude jumping from $+179.9^\circ$ to $-179.9^\circ$ over the Pacific Ocean), standard polylines draw a horizontal streak across the entire world map.
 * **Solution:** Built `segmentTrackAcrossDateLine`: whenever $|\text{lon}_i - \text{lon}_{i-1}| > 180^\circ$, the path splits into separate polyline segments, rendering accurate orbital tracks.

@@ -315,7 +315,7 @@ export default function App() {
 
           <div className="flex items-center gap-6 text-[11px] font-mono text-slate-400">
             <span>Data: wheretheiss.at / Open-Notify</span>
-            <span>Tiles: CARTO / OpenStreetMap</span>
+            <span>Tiles: Esri / OpenStreetMap</span>
             <span>Coordinates: WGS84 Datum</span>
           </div>
         </div>

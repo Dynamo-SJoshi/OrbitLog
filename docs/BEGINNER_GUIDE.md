@@ -257,7 +257,7 @@ Always validate incoming numbers before rendering:
 ### 5.1 Map Coordinates & Leaflet
 Leaflet is a lightweight mapping library. In React, we use `react-leaflet`, which wraps Leaflet inside declarative React components:
 - `<MapContainer>` initializes the map canvas.
-- `<TileLayer>` loads map tiles (we use dark-themed tiles from CartoDB).
+- `<TileLayer>` loads map tiles (we use free unauthenticated tile layers from Esri Dark Canvas, Esri Satellite, and OpenStreetMap).
 - `<Marker>` renders a pin at `[latitude, longitude]`.
 - `<Polyline>` draws the recent orbital path.
 - `<Circle>` displays the visual horizon footprint.
@@ -409,6 +409,7 @@ Because ASTRA Orbit is a purely client-side static application, it can be hosted
 | Symptom / Error | Likely Cause | Diagnostic Step | Fix | How to Verify |
 | :--- | :--- | :--- | :--- | :--- |
 | **`npm.ps1 cannot be loaded`** | Windows PowerShell security policy | Run `Get-ExecutionPolicy` | Use `npm.cmd` or run `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass` | `npm.cmd -v` outputs version number |
+| **Map displays "API KEY REQUIRED" watermark** | CartoDB recently instituted an API key requirement on `cartocdn.com/dark_all` tiles | Inspect tile image URLs in DevTools Network tab | Switch to Esri Dark Canvas (`services/Canvas/World_Dark_Gray_Base`), Esri Satellite, or OpenStreetMap | Map tiles render without watermarks or keys |
 | **Map shows grey strips or broken tiles** | Missing Leaflet CSS stylesheet | Inspect DOM `<head>` for `leaflet.css` | Add `@import "leaflet/dist/leaflet.css";` to `src/index.css` | World map renders smooth continuous tiles |
 | **Straight horizontal line across the map** | ISS crossed antimeridian ($180^\circ$) | Check ground track coordinates across $+179^\circ \to -179^\circ$ | Use `segmentTrackAcrossDateLine` to split polylines | Ground track splits cleanly at map borders |
 | **Telemetry stuck or showing stale warning** | Network offline or API rate limit exceeded | Check browser DevTools Network tab for HTTP 429 | Increase poll interval to 10s or click **Sync** button | Status badge turns green; coordinates update |
