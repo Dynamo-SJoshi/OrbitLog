@@ -264,6 +264,28 @@ dist/assets/index-B1LUU2-3.js   414.10 kB │ gzip: 126.13 kB
 
 ---
 
-## Checkpoint Status: Project Ready
+## Step 09 — Full-Viewport Flight Deck & Tactical Avionics Console
+
+- **Estimated Time:** 45 minutes
+- **Actual Time:** 35 minutes
+- **Objective:** Eliminate generic "cookie-cutter AI dashboard" layout tropes and transform OrbitLog into a genuine, full-viewport aerospace telemetry console inspired by SpaceX Crew Dragon and Flightradar24.
+
+### Architectural Transformations
+1. **Full-Viewport Canvas:** Replaced vertical page scrolling and fixed-height card containers with a full-screen `100vw × 100vh` interactive map canvas.
+2. **Tactical Flight Console (`FlightConsole.jsx`):** Collapsible avionics sidebar with three tabs:
+   - *Primary Telemetry:* Monospace WGS-84 coordinates, altitude, orbital ground speed (km/h, km/s, Mach), and footprint.
+   - *IIIT Surat Ground Station Vector:* Spherical trigonometry (Haversine formula + forward azimuth) calculating real-time ground distance, bearing, and line-of-sight elevation from the IIIT Surat campus ($21.1702^\circ\text{ N}, 72.8311^\circ\text{ E}$).
+   - *Expedition Crew Manifest:* Real-time astronaut roster querying `api.open-notify.org/astros.json`.
+3. **Orbital Phase Strip (`OrbitTimeline.jsx`):** Floating bottom telemetry HUD showing current Day/Night eclipse phase, sub-satellite coordinates, and local pass status.
+4. **Surat Ground Station Map Pin:** Visual ground station marker with pulsing radar ping located directly at IIIT Surat on the interactive world map.
+
+### Verification Result
+- `oxlint`: 0 warnings, 0 errors in 19ms.
+- `vite build`: Clean static bundle compiled in 685ms.
+- Local working tree clean with milestone commit `a5d98f1`.
+
+---
+
+## Checkpoint Status: Full-Screen Flight Deck Active
 
 All milestones have been verified locally against the actual running code and terminal output. No test results or metrics were simulated.
