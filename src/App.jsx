@@ -139,15 +139,6 @@ export default function App() {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-cyan-500 selection:text-slate-950 font-sans">
       
-      {/* Background Star Field Ambience */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute top-1/4 left-1/5 w-1 h-1 bg-cyan-200 rounded-full animate-twinkle"></div>
-        <div className="absolute top-1/3 right-1/4 w-1.5 h-1.5 bg-sky-100 rounded-full animate-twinkle-delayed"></div>
-        <div className="absolute top-2/3 left-1/3 w-1 h-1 bg-indigo-200 rounded-full animate-twinkle"></div>
-        <div className="absolute bottom-1/4 right-1/5 w-1.5 h-1.5 bg-violet-200 rounded-full animate-twinkle-delayed"></div>
-        <div className="absolute top-1/6 right-1/10 w-1 h-1 bg-cyan-300 rounded-full animate-twinkle"></div>
-        <div className="absolute top-0 inset-x-0 h-96 bg-gradient-to-b from-cyan-950/15 via-transparent to-transparent pointer-events-none"></div>
-      </div>
 
       {/* Mission Control Header */}
       <Header

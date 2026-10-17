@@ -36,19 +36,6 @@
   background: #334155;
 }
 
-/* Space star background animation utility */
-@keyframes twinkle {
-  0%, 100% { opacity: 0.2; transform: scale(0.8); }
-  50% { opacity: 1; transform: scale(1.1); }
-}
-
-.animate-twinkle {
-  animation: twinkle 4s ease-in-out infinite;
-}
-
-.animate-twinkle-delayed {
-  animation: twinkle 5s ease-in-out 2s infinite;
-}
 
 /* Orbit pulse ring animation */
 @keyframes pulse-ring {
