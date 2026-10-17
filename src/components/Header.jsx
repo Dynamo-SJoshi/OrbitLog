@@ -1,5 +1,6 @@
 import React from 'react';
 import { 
+  Satellite,
   RefreshCw, 
   Crosshair, 
   WifiOff, 
@@ -57,22 +58,9 @@ export default function Header({
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
         
         {/* Branding & Club Title */}
-        <div className="flex items-center gap-3.5 w-full md:w-auto justify-between md:justify-start">
-          <div className="relative flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-tr from-cyan-950 via-slate-900 to-indigo-950 border border-cyan-500/40 shadow-[0_0_20px_rgba(6,182,212,0.3)] group cursor-default">
-            {/* Custom SVG OrbitLog Emblem */}
-            <svg className="w-6 h-6 text-cyan-400" viewBox="0 0 32 32" fill="none">
-              {/* Planetary / Core Body */}
-              <circle cx="16" cy="16" r="4.5" fill="#0891b2" className="animate-pulse" />
-              <circle cx="16" cy="16" r="3" fill="#38bdf8" />
-              {/* Primary Orbital Ellipse */}
-              <ellipse cx="16" cy="16" rx="11" ry="4.5" transform="rotate(-30 16 16)" stroke="#06b6d4" strokeWidth="1.5" strokeDasharray="3 2" opacity="0.9" />
-              {/* Secondary Trajectory Arc */}
-              <ellipse cx="16" cy="16" rx="12" ry="5.5" transform="rotate(35 16 16)" stroke="#818cf8" strokeWidth="1.2" opacity="0.6" />
-              {/* Satellite Node on Orbit */}
-              <circle cx="24" cy="11.5" r="1.8" fill="#e0f2fe" stroke="#0284c7" strokeWidth="1" />
-              <circle cx="8" cy="20.5" r="1.2" fill="#a5f3fc" />
-            </svg>
-            <div className="absolute inset-0 rounded-xl pulse-ring border border-cyan-400/30 pointer-events-none"></div>
+        <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-start">
+          <div className="flex items-center justify-center text-cyan-400">
+            <Satellite className="w-7 h-7 text-cyan-400 drop-shadow-[0_0_10px_rgba(6,182,212,0.7)]" />
           </div>
           <div>
             <div className="flex items-center gap-2">
