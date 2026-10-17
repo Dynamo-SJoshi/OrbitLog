@@ -9,7 +9,7 @@
 ## 1. Architectural Philosophy
 
 OrbitLog is designed around three core principles:
-1. **Full-Viewport Tool-First Canvas:** Inspired by SpaceX Crew Dragon and Flightradar24, the interactive orbital map occupies 100% of the screen (`100vw × 100vh`). Telemetry is presented in tactical, non-intrusive HUD panels rather than scrolling cookie-cutter cards.
+1. **Full-Viewport Tool-First Canvas:** Inspired by SpaceX Crew Dragon and Flightradar24, the interactive orbital map occupies 100% of the screen (`100vw × 100vh`). Telemetry is presented in tactical, non-intrusive HUD panels and a collapsible avionics console.
 2. **Zero-Backend Client-Side Execution:** Operates completely in the client's browser runtime. All telemetry acquisition, verification, Haversine spherical trigonometry, and antimeridian coordinate segmenting happen in browser memory with zero backend dependencies.
 3. **Automated Zero-Maintenance Feeds:** Both the satellite telemetry (`wheretheiss.at`) and the astronaut crew manifest (`corquaid.github.io/international-space-station-APIs`) query automated live APIs with offline fallbacks.
 

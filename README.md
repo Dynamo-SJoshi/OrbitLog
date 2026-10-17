@@ -14,7 +14,7 @@
 
 **OrbitLog** is a full-viewport (`100vw × 100vh`) aerospace operations deck that tracks the real-time orbital trajectory, geodetic position, velocity, and ground station vectors of the **International Space Station (ISS)**.
 
-Engineered specifically to eliminate generic AI card-dashboard tropes, OrbitLog delivers a genuine mission-control interface inspired by SpaceX Crew Dragon avionics and Flightradar24. Alongside the tracker, this repository serves as a **comprehensive educational guide and engineering build log** for students to study real-time satellite telemetry, spherical trigonometry (Haversine geodesy), and map projection algorithms.
+OrbitLog delivers a modern, high-precision mission-control interface inspired by SpaceX Crew Dragon avionics and Flightradar24. Alongside the tracker, this repository serves as a **comprehensive educational platform** for students to study real-time satellite telemetry, spherical trigonometry (Haversine geodesy), and map projection algorithms.
 
 ---
 
@@ -87,7 +87,7 @@ Clone or download the project and launch it in three simple commands:
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/ASTRA-IIITSurat/OrbitLog.git
+git clone https://github.com/Dynamo-SJoshi/OrbitLog.git
 cd OrbitLog
 
 # 2. Install dependencies (use npm.cmd on Windows if script execution policy is restricted)
@@ -135,7 +135,6 @@ The output will be generated in the `dist/` directory.
 OrbitLog includes an extensive documentation suite designed for engineering students:
 
 - 📖 **[Beginner's Build Guide](docs/BEGINNER_GUIDE.md):** 10-chapter walkthrough covering APIs, Leaflet, Haversine spherical geodesy, and production deployment.
-- 📝 **[Engineering Build Log](docs/BUILD_LOG.md):** Authentic step-by-step engineering log detailing real terminal commands, error diagnoses, timings, and Git commits across 12 milestones.
 - 📐 **[System Architecture](docs/ARCHITECTURE.md):** System layout, component hierarchy, sequence diagrams, and mathematical formulas.
 - 🧪 **[Quality Assurance & Testing](docs/TESTING.md):** 13 verified test cases (TC-01 through TC-13), failover simulations, and static analysis results.
 
@@ -173,5 +172,5 @@ This project is open-source under the [MIT License](LICENSE).
 
 **ASTRA &mdash; Astronomy &amp; Astrophysics Club**  
 Indian Institute of Information Technology Surat  
-*Ad Astra Per Aspera* 🚀
+*Ad Astra* 🚀
 

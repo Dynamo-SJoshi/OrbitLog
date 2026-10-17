@@ -28,7 +28,7 @@
 The **International Space Station (ISS)** is the largest artificial object in space. Orbiting the Earth in Low Earth Orbit (LEO) at an average altitude of approximately **420 km** above sea level, it travels at a staggering speed of **~27,600 km/h** (~7.66 km per second). At this velocity, the ISS circles our planet once every **~92.9 minutes**, giving astronauts aboard 16 sunrises and sunsets every single Earth day.
 
 ### 1.2 What OrbitLog Does
-**OrbitLog** is a full-viewport (`100vw × 100vh`) aerospace operations deck built for the ASTRA Astronomy Club at IIIT Surat. Rather than a generic scrolling dashboard, OrbitLog functions as a genuine mission-control interface:
+**OrbitLog** is a full-viewport (`100vw × 100vh`) aerospace operations deck built for the ASTRA Astronomy Club at IIIT Surat, functioning as a real-time mission-control interface:
 - **Full-Viewport Interactive Map:** High-precision Leaflet canvas with Esri Dark Canvas, Esri Satellite imagery, and OpenStreetMap tiles (100% free with zero API keys).
 - **Sub-Second Orbital Telemetry:** Live geodetic WGS-84 coordinates, altitude, orbital velocity (km/h, km/s, Mach), line-of-sight footprint radius, and day/night orbital eclipse state.
 - **IIIT Surat Ground Station Vector:** Real-time great-circle distance (km / miles), forward azimuth bearing, and line-of-sight elevation tracking between the ISS and the IIIT Surat campus ($21.1702^\circ\text{ N}, 72.8311^\circ\text{ E}$) via spherical trigonometry (Haversine formula).
@@ -157,7 +157,7 @@ OrbitLog/
 │   ├── App.jsx           # Main orchestrator & state manager
 │   ├── main.jsx          # React DOM entry point
 │   └── index.css         # Tailwind & Leaflet styles
-├── docs/                 # Engineering logs, architecture, QA tests & beginner guide
+├── docs/                 # System architecture, QA test suite & beginner guide
 ├── index.html            # Webpage shell
 ├── package.json          # Project manifest & scripts
 ├── vite.config.js        # Vite bundler configuration
@@ -383,7 +383,7 @@ const suratIcon = L.divIcon({
 ## Chapter 6 — Build the Tactical Flight Console & HUD
 
 ### 6.1 Architecture of the Avionics Drawer (`FlightConsole.jsx`)
-Instead of fixed scrolling cards, OrbitLog uses a collapsible avionics console drawer inspired by modern aerospace operations software. It mounts on the right side of the screen with three dedicated tabs:
+OrbitLog uses a collapsible avionics console drawer inspired by modern aerospace operations software. It mounts on the right side of the screen with three dedicated tabs:
 
 1. **Telemetry Tab:** High-density monospace telemetry:
    - Latitude and Longitude (WGS-84 decimal and directional format).
