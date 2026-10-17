@@ -305,7 +305,7 @@ export default function FlightConsole({
                     </div>
                     <div className="flex items-center justify-between mt-1 text-[10px] text-slate-400 pl-3.5">
                       <span>{astronaut.role || 'Flight Engineer'}</span>
-                      <span className="text-slate-500">{astronaut.nation}</span>
+                      <span className="text-slate-400 font-mono">{astronaut.spacecraft ? `${astronaut.spacecraft} (${astronaut.nation})` : astronaut.nation}</span>
                     </div>
                   </div>
                 ))}
