@@ -170,7 +170,7 @@ This project is open-source under the [MIT License](LICENSE).
 
 ---
 
-**ASTRA &mdash; Astronomy &amp; Astrophysics Club**  
+**ASTRA &mdash; Astronomy, AstroTech &amp; Astrophysics Club**  
 Indian Institute of Information Technology Surat  
 *Ad Astra* 🚀
 
