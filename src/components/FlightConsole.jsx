@@ -237,7 +237,7 @@ export default function FlightConsole({
                 <div className="py-2 text-center bg-slate-950/70 rounded border border-slate-800/60">
                   <span className="text-[10px] text-slate-400 uppercase tracking-widest block">Great-Circle Ground Distance</span>
                   <span className="text-2xl font-black text-slate-100 font-mono">
-                    {suratTelemetry?.distanceKm !== null ? `${suratTelemetry.distanceKm.toLocaleString()} km` : '--'}
+                    {typeof suratTelemetry?.distanceKm === 'number' ? `${suratTelemetry.distanceKm.toLocaleString()} km` : '--'}
                   </span>
                 </div>
 
@@ -258,7 +258,7 @@ export default function FlightConsole({
                   <div className="p-2 rounded bg-slate-950/50 border border-slate-800">
                     <span className="text-[10px] text-slate-400 block uppercase">Azimuth Heading</span>
                     <span className="text-slate-100 font-bold">
-                      {suratTelemetry?.bearingDeg !== null ? `${suratTelemetry.bearingDeg}° (${suratTelemetry.bearingCardinal})` : '--'}
+                      {typeof suratTelemetry?.bearingDeg === 'number' ? `${suratTelemetry.bearingDeg}° (${suratTelemetry.bearingCardinal})` : '--'}
                     </span>
                   </div>
                   <div className="p-2 rounded bg-slate-950/50 border border-slate-800">

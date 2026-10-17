@@ -65,7 +65,7 @@ export default function OrbitTimeline({
             <Target className="w-3.5 h-3.5 text-rose-400" />
             <span className="text-slate-400">IIIT Surat:</span>
             <span className={`font-bold ${suratTelemetry?.isLineOfSight ? 'text-emerald-400' : 'text-slate-200'}`}>
-              {suratTelemetry?.distanceKm !== null ? `${suratTelemetry.distanceKm.toLocaleString()} km` : '--'}
+              {typeof suratTelemetry?.distanceKm === 'number' ? `${suratTelemetry.distanceKm.toLocaleString()} km` : '--'}
             </span>
           </div>
 
