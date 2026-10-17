@@ -1,8 +1,8 @@
-# ASTRA Orbit — Quality Assurance & Testing Suite
+# OrbitLog — Quality Assurance & Testing Suite
 
-> **Project:** ASTRA Orbit — ISS Satellite Tracker  
-> **Target:** Verification of Live Tracking, Map Projections, Failover & Responsive UX  
-> **Testing Scope:** Automated Code Quality, Integration Verification, Manual Edge Cases  
+> **Project:** OrbitLog — Aerospace ISS Operations Deck  
+> **Target:** Verification of Live Tracking, Map Projections, Avionics Drawer, Surat Vector Geodesy, Automated Crew Manifest & Failover  
+> **Testing Scope:** Automated Static Analysis, Build Auditing, Integration Verification, Manual Edge Cases  
 
 ---
 
@@ -23,9 +23,10 @@
 - **Procedure:** Open application in an incognito window with cache disabled.
 - **Expected Outcome:**
   - Header displays "Acquiring..." spinner briefly.
-  - Telemetry cards display pulse skeleton loaders.
+  - Full-screen Leaflet map mounts with Esri Dark Canvas.
   - Live coordinates, speed, and altitude populate within $\le 2$ seconds.
   - Connection status badge transitions to green: `Telemetry Active`.
+  - Surat distance vector calculates and displays in bottom HUD.
 - **Status:** **PASS**
 
 ---
@@ -104,9 +105,9 @@
 ### TC-08: Responsive Layout (Mobile, Tablet, Desktop)
 - **Objective:** Confirm UI usability across various device form factors.
 - **Viewport Profiles Tested:**
-  - Mobile: 375px (iPhone SE / Android) -> Cards arrange in 2-column grid; header controls stack cleanly.
-  - Tablet: 768px (iPad Mini) -> 3-column telemetry grid; map height adjusts to 520px.
-  - Desktop: 1280px+ -> 6-column telemetry strip; map height 600px; full mission-control density.
+  - Mobile: 375px (iPhone SE / Android) -> FlightConsole drawer behaves as a full-screen drawer; header controls collapse gracefully.
+  - Tablet: 768px (iPad Mini) -> Map canvas fills viewport; bottom HUD wraps cleanly.
+  - Desktop: 1280px+ -> Full aerospace operations deck density; sidebar drawer slides over canvas cleanly.
 - **Status:** **PASS**
 
 ---
@@ -122,3 +123,54 @@
   ✓ built in 698ms
   ```
 - **Status:** **PASS**
+
+---
+
+### TC-10: Flight Console Drawer Navigation & Tabs
+- **Objective:** Verify collapsible avionics sidebar toggles open/close and allows seamless tab switching.
+- **Procedure:**
+  1. Click **Console** button in top header bar.
+  2. Switch between **Telemetry**, **Surat Vector**, and **Crew Manifest** tabs.
+  3. Close drawer via the close icon (`X`) or header toggle.
+- **Expected Outcome:**
+  - Sidebar smoothly animates in and out with zero layout jump.
+  - Active tab highlights with cyan aerospace underline.
+  - Tab state preserves current telemetry values without triggering redundant network re-fetches.
+- **Status:** **PASS**
+
+---
+
+### TC-11: Surat Ground Station Vector Calculation & Bearing
+- **Objective:** Verify accurate spherical trigonometry calculation for IIIT Surat ($21.1702^\circ\text{ N}, 72.8311^\circ\text{ E}$).
+- **Procedure:** Inspect Surat Vector card in the Flight Console and bottom HUD.
+- **Expected Outcome:**
+  - Distance in km and miles calculates correctly using the Haversine great-circle formula.
+  - Forward azimuth bearing ($0^\circ\text{--}360^\circ$) updates with an interactive compass needle indicator.
+  - Line-of-sight elevation status displays "Beyond Horizon" or "Direct Visual LOS" based on the $\approx 2,200\text{ km}$ horizon radius.
+  - Ground station marker pin with amber beacon remains visible on the map.
+- **Status:** **PASS**
+
+---
+
+### TC-12: Automated Real-Time Astronaut Manifest & Spacecraft Badges
+- **Objective:** Verify crew data loads from the automated live API without stale legacy records.
+- **Procedure:**
+  1. Open the Flight Console and navigate to the **Crew Manifest** tab.
+  2. Inspect the astronaut count and individual astronaut cards.
+- **Expected Outcome:**
+  - Manifest loads dynamically from `corquaid.github.io/international-space-station-APIs`.
+  - Active astronauts (e.g., Expedition crew) are listed with their actual launch spacecraft (e.g. *Soyuz MS-29*, *Crew Dragon*), agency tags (`NASA`, `ROSCOSMOS`, `CSA`), and role.
+  - Landed astronauts who returned to Earth are omitted from the active roster.
+- **Status:** **PASS**
+
+---
+
+### TC-13: Cold Boot Null-Guard & Defensive Rendering Verification
+- **Objective:** Guarantee zero white screens or unhandled exceptions during initial render when coordinates or ground range data are asynchronous/null.
+- **Procedure:** Hard-refresh the page (`Ctrl + F5`) while monitoring the browser console for runtime exceptions.
+- **Expected Outcome:**
+  - All JSX bindings use safe type guards (`typeof suratTelemetry?.distanceKm === 'number'`).
+  - No `TypeError: Cannot read properties of null (reading 'toLocaleString')` occurs.
+  - All telemetry fields render placeholders (`--`) until live telemetry packet resolves.
+- **Status:** **PASS**
+

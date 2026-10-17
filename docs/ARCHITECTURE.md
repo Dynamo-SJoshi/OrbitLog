@@ -1,123 +1,131 @@
-# ASTRA Orbit — System Architecture & Technical Design
+# OrbitLog — System Architecture & Technical Design
 
-> **Project:** ASTRA Orbit — Live ISS Satellite Tracker  
-> **Team:** ASTRA (Astronomy & Astrophysics Club), IIIT Surat  
-> **Classification:** Educational Aerospace Web Application  
+> **Project:** OrbitLog — Live ISS Satellite Tracker & Flight Operations Console  
+> **Club:** ASTRA (Astronomy & Astrophysics Club), IIIT Surat  
+> **Classification:** Aerospace Telemetry & Geospatial Web Instrument  
 
 ---
 
 ## 1. Architectural Philosophy
 
-ASTRA Orbit is built upon three primary architectural principles:
-1. **Zero-Backend Client-Side Resilience:** Operates without a middle-tier server or database. All telemetry acquisition, verification, unit transformation, and geospatial projection take place directly inside the user's browser runtime.
-2. **Deterministic Failover:** Integrates multi-provider failover. If the primary REST endpoint encounters network dropouts, rate limits, or DNS resolution errors, the client silently transitions to a secondary satellite endpoint without breaking UI state.
-3. **Graceful Degraded & Stale States:** Distinguishes between live, buffered, stale, and offline conditions. Satellite tracking data is strictly labeled with source provenance and age.
+OrbitLog is designed around three core principles:
+1. **Full-Viewport Tool-First Canvas:** Inspired by SpaceX Crew Dragon and Flightradar24, the interactive orbital map occupies 100% of the screen (`100vw × 100vh`). Telemetry is presented in tactical, non-intrusive HUD panels rather than scrolling cookie-cutter cards.
+2. **Zero-Backend Client-Side Execution:** Operates completely in the client's browser runtime. All telemetry acquisition, verification, Haversine spherical trigonometry, and antimeridian coordinate segmenting happen in browser memory with zero backend dependencies.
+3. **Automated Zero-Maintenance Feeds:** Both the satellite telemetry (`wheretheiss.at`) and the astronaut crew manifest (`corquaid.github.io/international-space-station-APIs`) query automated live APIs with offline fallbacks.
 
 ---
 
 ## 2. Component Hierarchy Diagram
 
 ```text
-App (Root Component: State Orchestrator & Polling Lifecycle)
+App (Root Component: Full-Viewport Canvas & Polling Lifecycle)
 │
-├── Header
-│   ├── Branding & Club Title (ASTRA IIIT Surat)
-│   ├── Connection Status Badge (Active / Acquiring / Stale / Offline)
-│   ├── Last Updated Timestamp
-│   ├── Map Recenter Trigger ("Center ISS")
-│   ├── Polling Interval Selector (5s, 10s, 15s, 30s)
-│   ├── Auto-Refresh Toggle
-│   └── Manual Sync Button
+├── Header (h-14 Tactical Flight Bar)
+│   ├── Satellite Vector Logo & OrbitLog Title
+│   ├── Live UTC Mission Clock (HH:MM:SS UTC)
+│   ├── Flight Console Toggle Trigger (CONSOLE Button)
+│   ├── Live Telemetry Status Badge (Active / Stale / Offline)
+│   ├── Map Recenter Trigger (CENTER Button)
+│   ├── Polling Cadence Selector (5s, 10s, 30s)
+│   ├── Auto/Manual Refresh Toggle
+│   └── On-Demand SYNC Trigger
 │
-├── Telemetry Grid (6 Reusable Metric Tiles)
-│   ├── TelemetryCard [Latitude - Geodetic / Decimal]
-│   ├── TelemetryCard [Longitude - WGS-84 / Decimal]
-│   ├── TelemetryCard [Altitude - km & mi / LEO Orbit]
-│   ├── TelemetryCard [Velocity - km/h & km/s]
-│   ├── TelemetryCard [Solar State - Daylight / Earth Shadow]
-│   └── TelemetryCard [LOS Footprint - Communication Radius]
-│
-├── LiveMap (Interactive Geospatial Engine)
-│   ├── MapContainer (Leaflet Engine)
-│   ├── TileLayer (CartoDB Dark Matter / OpenStreetMap)
-│   ├── MapController (Programmatic Camera Pan / Recenter)
-│   ├── Polyline[] (Antimeridian-Segmented Ground Track)
-│   ├── Circle (Line-of-Sight Visibility Horizon)
-│   ├── Marker (Custom SVG Space Station & Pulse Beacon)
+├── LiveMap (Full-Screen Leaflet Geospatial Engine)
+│   ├── MapContainer (w-full h-full Leaflet Canvas)
+│   ├── TileLayer (Esri Dark Canvas / Esri Satellite / OpenStreetMap)
+│   ├── MapController (Programmatic Recenter & Pan)
+│   ├── Polyline[] (Antimeridian-Segmented Dual Ground Track)
+│   ├── Circle (Line-of-Sight Visibility Horizon Boundary)
+│   ├── Marker [ISS Satellite] (Custom Inlined SVG & Radar Beacon)
 │   │   └── Popup (Real-time telemetry tooltip)
-│   └── Map Controls HUD (Track toggle, Footprint toggle, Layer switch)
+│   ├── Marker [IIIT Surat Ground Station] (Pulse Marker at 21.17°N, 72.83°E)
+│   │   └── Popup (Campus coordinates and station details)
+│   └── Map Controls HUD (Tile switcher, Footprint toggle, Track trail toggle)
 │
-├── ISSInfoPanel (Science Reference & Educational Resource Deck)
-│   ├── Orbital Parameters (Inclination, Period, Apogee, Perigee)
-│   ├── Verified Station Facts
-│   └── Curated Educational Resource Links
+├── FlightConsole (Collapsible Left Avionics Drawer / Split View)
+│   ├── Tab 1: Primary Telemetry (WGS-84 Coordinates, Altitude, Ground Speed, Mach, Power)
+│   ├── Tab 2: IIIT Surat Ground Station Vector (Haversine Distance, Azimuth Heading, LOS Status)
+│   └── Tab 3: Expedition Crew Manifest (Automated live astronauts, roles, spacecraft, agency)
 │
-└── Footer (Attribution, API Credits & Datum Standards)
+└── OrbitTimeline (Floating Bottom Orbital Phase Strip)
+    ├── Sub-Satellite Position & Altitude Indicator
+    ├── Solar Phase Indicator (Daylight Transit vs. Orbital Eclipse Umbra)
+    ├── IIIT Surat Proximity Gauge & Direct Line-of-Sight Alert
+    └── Stale Data Watchdog Warning
 ```
 
 ---
 
-## 3. Telemetry Data Flow
+## 3. Data Flow & Multi-Source Failover Sequence
 
 ```mermaid
 sequenceDiagram
     autonumber
-    participant User
+    participant Browser as Browser Client
     participant App as App.jsx
     participant Service as issApi.js
-    participant Primary as WhereTheISS API
-    participant Fallback as Open-Notify API
-    participant Map as LiveMap.jsx
+    participant WTIA as WhereTheISS API (Primary)
+    participant OpenNotify as Open-Notify API (Fallback)
+    participant CrewAPI as People-In-Space API
 
     App->>Service: fetchISSTelemetry(signal)
-    alt Primary API Available
-        Service->>Primary: GET /v1/satellites/25544
-        Primary-->>Service: 200 OK (JSON with lat, lon, alt, vel, footprint)
-    else Primary API Fails (429 / 5xx / Network Error)
-        Service->>Fallback: GET /iss-now.json
-        Fallback-->>Service: 200 OK (JSON with lat, lon)
+    alt Primary Provider Available
+        Service->>WTIA: GET /v1/satellites/25544
+        WTIA-->>Service: 200 OK (lat, lon, alt, velocity, visibility, footprint)
+    else Primary Provider Unavailable
+        Service->>OpenNotify: GET /iss-now.json
+        OpenNotify-->>Service: 200 OK (lat, lon)
     end
-    Service->>Service: validateTelemetry(payload)
-    Service->>App: Normalized Telemetry Object
-    App->>App: Update State (telemetry, trackHistory, lastUpdated)
-    App->>Map: Pass updated coordinates & ground track
-    Map->>Map: Split track across 180° meridian & re-render
+    Service->>Service: validateTelemetry() & calculateSuratTelemetry()
+    Service-->>App: Normalized Telemetry + Surat Range Vector
+
+    Note over App,CrewAPI: Astronaut Manifest Flow (On Mount)
+    App->>Service: fetchLiveCrew(signal)
+    Service->>CrewAPI: GET /people-in-space.json
+    CrewAPI-->>Service: 200 OK (active crew, spacecraft, agency, position)
+    Service-->>App: Normalized Active Crew List
 ```
 
 ---
 
-## 4. State Management Model
+## 4. Ground Station Spherical Trigonometry (IIIT Surat)
 
-| State Field | Type | Default | Description |
-| :--- | :--- | :--- | :--- |
-| `telemetry` | `object \| null` | `null` | Sanitized satellite coordinates, speed, altitude, and visibility. |
-| `trackHistory` | `Array<{lat, lon, timestamp}>` | `[]` | FIFO ring buffer (capped at 80 points) of recent orbital coordinates. |
-| `status` | `'loading' \| 'connected' \| 'error'` | `'loading'` | Macro network and telemetry health status. |
-| `isFetching` | `boolean` | `true` | Micro state indicating an in-flight network request. |
-| `lastUpdated` | `number \| null` | `null` | Unix timestamp of last valid telemetry acquisition. |
-| `isStale` | `boolean` | `false` | Watchdog flag activated when telemetry age exceeds 30,000 ms. |
-| `autoRefresh` | `boolean` | `true` | Controls the automatic polling timer. |
-| `refreshInterval`| `number` | `5` | Polling cadence in seconds (5s, 10s, 15s, 30s). |
-| `autoCenter` | `boolean` | `false` | When true, automatically pans the map camera to the satellite position. |
+To compute the exact real-time ground distance and azimuth from the **IIIT Surat campus ($21.1702^\circ\text{ N}, 72.8311^\circ\text{ E}$)** to the moving satellite, OrbitLog uses spherical geometry:
 
----
+### Great-Circle Ground Distance (Haversine Formula)
 
-## 5. Antimeridian (International Date Line) Algorithm
+$$a = \sin^2\left(\frac{\Delta \phi}{2}\right) + \cos(\phi_1)\cos(\phi_2)\sin^2\left(\frac{\Delta \lambda}{2}\right)$$
 
-Standard 2D map projections map Earth's longitude onto the interval $[-180^\circ, +180^\circ]$. When an orbital ground track crosses from the Eastern hemisphere ($+179.9^\circ$) into the Western hemisphere ($-179.9^\circ$), a naive polyline connects the two points by traversing across the entire map ($359.8^\circ$ span).
+$$d = 2 R \cdot \operatorname{atan2}\left(\sqrt{a}, \sqrt{1 - a}\right)$$
 
-ASTRA Orbit solves this via coordinate segmenting:
+Where:
+- $\phi_1, \lambda_1$ = IIIT Surat coordinates ($21.1702^\circ, 72.8311^\circ$)
+- $\phi_2, \lambda_2$ = ISS instantaneous sub-satellite coordinates
+- $R = 6,371\text{ km}$ (Earth mean radius)
 
-$$\Delta \text{lon} = |\text{lon}_i - \text{lon}_{i-1}|$$
+### Forward Azimuth (Bearing from Surat to ISS)
 
-$$\text{If } \Delta \text{lon} > 180^\circ \implies \text{Split polyline into new segment}$$
+$$\theta = \operatorname{atan2}\left(\sin(\Delta \lambda)\cos(\phi_2), \cos(\phi_1)\sin(\phi_2) - \sin(\phi_1)\cos(\phi_2)\cos(\Delta \lambda)\right)$$
 
-This ensures that each continuous orbital arc terminates cleanly at the map edge and resumes on the opposite margin.
+### Direct Line-of-Sight (LOS) Determination
+
+$$\text{Line of Sight} = \begin{cases} \text{Active / Overhead}, & \text{if } d \le \frac{\text{Footprint Diameter}}{2} \approx 2,200\text{ km} \\ \text{Below Local Horizon}, & \text{otherwise} \end{cases}$$
 
 ---
 
-## 6. Performance & Memory Management
+## 5. Antimeridian Date-Line Segmenting
 
-- **AbortController on Fetch Requests:** Avoids race conditions and ensures in-flight network promises are safely aborted when components unmount or intervals change.
-- **Ring Buffer for History:** Ground track memory footprint is strictly bounded to the last 80 coordinates, preventing memory consumption from growing unbounded over multi-hour tracking sessions.
-- **Marker Inlining:** Custom SVG satellite icon is rendered via `L.divIcon`, eliminating asset HTTP requests and preventing broken image path bugs in packaged builds.
+To prevent Leaflet polylines from connecting coordinates across the $180^\circ$ meridian with distorted horizontal lines across the globe, the path is partitioned:
+
+$$\text{If } |\lambda_i - \lambda_{i-1}| > 180^\circ \implies \text{Terminate current segment and begin new polyline segment}$$
+
+---
+
+## 6. Defensive Programming & Null Guards
+
+To guarantee zero blank-screen crashes during cold boot, network delays, or initial render cycles:
+- All optional telemetry fields are guarded by strict primitive type checks:
+  ```javascript
+  typeof suratTelemetry?.distanceKm === 'number'
+  ```
+- Eliminates JavaScript's loose inequality trap where `undefined !== null` evaluates to `true`.
