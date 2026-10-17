@@ -1,6 +1,5 @@
 import React from 'react';
 import { 
-  Orbit, 
   RefreshCw, 
   Crosshair, 
   WifiOff, 
@@ -59,21 +58,35 @@ export default function Header({
         
         {/* Branding & Club Title */}
         <div className="flex items-center gap-3.5 w-full md:w-auto justify-between md:justify-start">
-          <div className="relative flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-tr from-cyan-600/20 via-blue-600/30 to-violet-600/20 border border-cyan-500/40 shadow-[0_0_15px_rgba(6,182,212,0.25)]">
-            <Orbit className="w-6 h-6 text-cyan-400" />
+          <div className="relative flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-tr from-cyan-950 via-slate-900 to-indigo-950 border border-cyan-500/40 shadow-[0_0_20px_rgba(6,182,212,0.3)] group cursor-default">
+            {/* Custom SVG OrbitLog Emblem */}
+            <svg className="w-6 h-6 text-cyan-400" viewBox="0 0 32 32" fill="none">
+              {/* Planetary / Core Body */}
+              <circle cx="16" cy="16" r="4.5" fill="#0891b2" className="animate-pulse" />
+              <circle cx="16" cy="16" r="3" fill="#38bdf8" />
+              {/* Primary Orbital Ellipse */}
+              <ellipse cx="16" cy="16" rx="11" ry="4.5" transform="rotate(-30 16 16)" stroke="#06b6d4" strokeWidth="1.5" strokeDasharray="3 2" opacity="0.9" />
+              {/* Secondary Trajectory Arc */}
+              <ellipse cx="16" cy="16" rx="12" ry="5.5" transform="rotate(35 16 16)" stroke="#818cf8" strokeWidth="1.2" opacity="0.6" />
+              {/* Satellite Node on Orbit */}
+              <circle cx="24" cy="11.5" r="1.8" fill="#e0f2fe" stroke="#0284c7" strokeWidth="1" />
+              <circle cx="8" cy="20.5" r="1.2" fill="#a5f3fc" />
+            </svg>
             <div className="absolute inset-0 rounded-xl pulse-ring border border-cyan-400/30 pointer-events-none"></div>
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl sm:text-2xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-300">
-                ASTRA ORBIT
+              <h1 className="text-xl sm:text-2xl font-black tracking-tight">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-cyan-200">Orbit</span>
+                <span className="text-white font-extrabold tracking-normal">Log</span>
               </h1>
-              <span className="text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded bg-cyan-950 text-cyan-400 border border-cyan-800">
-                ISS Live
+              <span className="inline-flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-widest px-2.5 py-0.5 rounded-full bg-cyan-950/80 text-cyan-300 border border-cyan-500/40 shadow-[0_0_10px_rgba(6,182,212,0.2)]">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+                ISS LIVE
               </span>
             </div>
             <p className="text-xs text-slate-400 font-medium">
-              Astronomy &amp; Astrophysics Club &mdash; <span className="text-slate-300">IIIT Surat</span>
+              Astronomy &amp; Astrophysics Club &mdash; <span className="text-slate-300 font-semibold">IIIT Surat</span>
             </p>
           </div>
 

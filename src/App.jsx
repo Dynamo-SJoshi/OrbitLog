@@ -306,7 +306,7 @@ export default function App() {
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="text-left">
             <p className="font-semibold text-slate-300">
-              ASTRA &mdash; Astronomy &amp; Astrophysics Club
+              OrbitLog &bull; ASTRA &mdash; Astronomy &amp; Astrophysics Club
             </p>
             <p className="text-slate-400">
               Indian Institute of Information Technology Surat (IIIT Surat)
