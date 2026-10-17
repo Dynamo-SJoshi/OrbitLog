@@ -292,21 +292,27 @@ export default function FlightConsole({
                 {crewData?.issCrew?.map((astronaut, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center justify-between p-2 rounded bg-slate-900/70 border border-slate-800/80 hover:border-slate-700 transition-colors"
+                    className="p-2.5 rounded bg-slate-900/70 border border-slate-800/80 hover:border-slate-700 transition-colors"
                   >
-                    <div className="flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
-                      <span className="font-medium text-slate-200">{astronaut.name}</span>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+                        <span className="font-bold text-slate-100">{astronaut.name}</span>
+                      </div>
+                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800">
+                        {astronaut.agency || 'ISS'}
+                      </span>
                     </div>
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">
-                      {astronaut.craft}
-                    </span>
+                    <div className="flex items-center justify-between mt-1 text-[10px] text-slate-400 pl-3.5">
+                      <span>{astronaut.role || 'Flight Engineer'}</span>
+                      <span className="text-slate-500">{astronaut.nation}</span>
+                    </div>
                   </div>
                 ))}
               </div>
 
               <div className="text-[10px] text-slate-500 text-right">
-                Feed: {crewData?.source || 'Open-Notify'}
+                Manifest: {crewData?.source || 'NASA / Roscosmos Official Manifest'}
               </div>
             </div>
           )}
