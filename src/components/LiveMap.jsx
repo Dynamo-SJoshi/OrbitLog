@@ -15,14 +15,19 @@ import {
   Navigation, 
   Eye, 
   Radio, 
-  AlertCircle 
+  AlertCircle,
+  Target
 } from 'lucide-react';
-import { segmentTrackAcrossDateLine, formatCoordinates } from '../services/issApi';
+import { 
+  segmentTrackAcrossDateLine, 
+  formatCoordinates, 
+  IIIT_SURAT_COORDS 
+} from '../services/issApi';
 
 // Custom SVG ISS icon with solar arrays and glowing beacon
 const createISSIcon = () => {
   const svgString = `
-    <div class="relative flex items-center justify-center w-12 h-12">
+    <div class="relative flex items-center justify-center w-12 h-12 pointer-events-auto cursor-pointer">
       <!-- Pulsing radar ring -->
       <div class="absolute inset-0 rounded-full border-2 border-cyan-400 bg-cyan-400/20 animate-ping opacity-60"></div>
       
@@ -60,6 +65,25 @@ const createISSIcon = () => {
   });
 };
 
+// Ground Station Custom Marker for IIIT Surat
+const createSuratStationIcon = () => {
+  const svg = `
+    <div class="relative flex items-center justify-center w-7 h-7">
+      <div class="absolute inset-0 rounded-full bg-rose-500/20 animate-ping"></div>
+      <div class="w-3.5 h-3.5 rounded-full bg-rose-500 border-2 border-slate-950 shadow-[0_0_12px_rgba(244,63,94,0.9)] flex items-center justify-center">
+        <div class="w-1 h-1 rounded-full bg-white"></div>
+      </div>
+    </div>
+  `;
+  return L.divIcon({
+    html: svg,
+    className: 'surat-station-icon',
+    iconSize: [28, 28],
+    iconAnchor: [14, 14],
+    popupAnchor: [0, -14]
+  });
+};
+
 // Component to programmatically adjust the map center
 function MapController({ center, autoCenter }) {
   const map = useMap();
@@ -85,6 +109,7 @@ export default function LiveMap({
   const [showGroundTrack, setShowGroundTrack] = useState(true);
 
   const issIcon = useMemo(() => createISSIcon(), []);
+  const suratIcon = useMemo(() => createSuratStationIcon(), []);
 
   // Map center coordinates
   const currentPos = telemetry ? [telemetry.latitude, telemetry.longitude] : [20, 0];
@@ -118,7 +143,7 @@ export default function LiveMap({
   const activeTile = TILE_LAYERS[mapStyle] || TILE_LAYERS.dark;
 
   return (
-    <div className="relative w-full h-[450px] sm:h-[520px] lg:h-[600px] rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 shadow-2xl">
+    <div className="relative w-full h-full overflow-hidden bg-[#070b12]">
       
       {/* Map Container */}
       <MapContainer
@@ -147,7 +172,7 @@ export default function LiveMap({
               positions={segment}
               pathOptions={{
                 color: '#06b6d4',
-                weight: 5,
+                weight: 4,
                 opacity: 0.35,
                 lineCap: 'round',
                 lineJoin: 'round'
@@ -182,21 +207,37 @@ export default function LiveMap({
           />
         )}
 
+        {/* IIIT Surat Ground Station Marker */}
+        <Marker position={[IIIT_SURAT_COORDS.lat, IIIT_SURAT_COORDS.lon]} icon={suratIcon}>
+          <Popup className="astra-map-popup">
+            <div className="p-1 font-mono text-xs text-slate-900">
+              <div className="font-bold text-rose-700 border-b pb-1 mb-1 flex items-center gap-1.5">
+                <Target className="w-3.5 h-3.5" />
+                IIIT Surat Ground Station
+              </div>
+              <div className="text-[11px] text-slate-700 space-y-0.5">
+                <div>Coords: {IIIT_SURAT_COORDS.lat}°N, {IIIT_SURAT_COORDS.lon}°E</div>
+                <div>Station: ASTRA Club, IIIT Surat</div>
+              </div>
+            </div>
+          </Popup>
+        </Marker>
+
         {/* ISS Position Marker */}
         {telemetry && (
           <Marker position={[telemetry.latitude, telemetry.longitude]} icon={issIcon}>
             <Popup className="astra-map-popup">
-              <div className="p-1 font-sans text-slate-900">
-                <div className="font-bold text-sm text-cyan-950 border-b pb-1 mb-1.5 flex items-center gap-1.5">
+              <div className="p-1 font-mono text-xs text-slate-900">
+                <div className="font-bold text-cyan-900 border-b pb-1 mb-1.5 flex items-center gap-1.5">
                   <Radio className="w-3.5 h-3.5 text-cyan-700" />
                   International Space Station
                 </div>
-                <div className="text-xs space-y-1">
-                  <div><strong>Coordinates:</strong> {fullStr}</div>
+                <div className="text-[11px] space-y-1">
+                  <div><strong>Coords:</strong> {fullStr}</div>
                   {telemetry.altitude && <div><strong>Altitude:</strong> {telemetry.altitude.toFixed(1)} km</div>}
                   {telemetry.velocity && <div><strong>Speed:</strong> {Math.round(telemetry.velocity).toLocaleString()} km/h</div>}
-                  <div><strong>Visibility:</strong> <span className="capitalize">{telemetry.visibility}</span></div>
-                  <div><strong>Signal Source:</strong> {telemetry.source}</div>
+                  <div><strong>Phase:</strong> <span className="capitalize">{telemetry.visibility}</span></div>
+                  <div><strong>Feed:</strong> {telemetry.source}</div>
                 </div>
               </div>
             </Popup>
@@ -206,26 +247,26 @@ export default function LiveMap({
 
       {/* Floating Status / Stale Warning Banner */}
       {isStale && (
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-950/90 border border-amber-600/60 text-amber-200 text-xs shadow-xl backdrop-blur-md">
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-950/90 border border-amber-600/80 text-amber-200 text-xs font-mono shadow-xl backdrop-blur-md">
           <AlertCircle className="w-4 h-4 text-amber-400" />
-          <span>Telemetry stale: No new signal received for &gt;30s. Showing last known coordinates.</span>
+          <span>Telemetry Stale: No signal received for &gt;30s</span>
         </div>
       )}
 
-      {/* Floating Map Controls Bar */}
-      <div className="absolute top-4 right-4 z-20 flex flex-col gap-2">
+      {/* Floating Map Controls HUD (Top Right) */}
+      <div className="absolute top-4 right-4 z-20 flex flex-col gap-1.5 font-mono">
         {/* Toggle Auto Center */}
         <button
           onClick={() => setAutoCenter(!autoCenter)}
           title={autoCenter ? 'Lock view onto ISS' : 'Unlock camera pan'}
-          className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold backdrop-blur-md border transition-all shadow-lg cursor-pointer ${
+          className={`flex items-center gap-2 px-2.5 py-1.5 rounded text-xs font-medium backdrop-blur-md border transition-all shadow-lg cursor-pointer ${
             autoCenter
-              ? 'bg-cyan-950/90 text-cyan-300 border-cyan-500/50 shadow-cyan-950/40'
-              : 'bg-slate-900/90 text-slate-300 border-slate-700/70 hover:bg-slate-800/90'
+              ? 'bg-cyan-950/90 text-cyan-300 border-cyan-500/80 shadow-cyan-950/40'
+              : 'bg-slate-900/90 text-slate-300 border-slate-700/80 hover:bg-slate-800'
           }`}
         >
-          <Crosshair className={`w-4 h-4 ${autoCenter ? 'text-cyan-400 animate-pulse' : 'text-slate-400'}`} />
-          <span>{autoCenter ? 'Tracking ISS' : 'Free Camera'}</span>
+          <Crosshair className={`w-3.5 h-3.5 ${autoCenter ? 'text-cyan-400 animate-pulse' : 'text-slate-400'}`} />
+          <span className="hidden sm:inline">{autoCenter ? 'TRACKING' : 'FREE PAN'}</span>
         </button>
 
         {/* Toggle Map Tiles: Dark -> Satellite -> Street */}
@@ -238,48 +279,39 @@ export default function LiveMap({
             });
           }}
           title="Switch Map Tiles (100% Free - Dark Canvas / Satellite / OSM)"
-          className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold bg-slate-900/90 hover:bg-slate-800/90 text-slate-300 border border-slate-700/70 backdrop-blur-md transition-all shadow-lg cursor-pointer"
+          className="flex items-center gap-2 px-2.5 py-1.5 rounded text-xs font-medium bg-slate-900/90 hover:bg-slate-800 text-slate-300 border border-slate-700/80 backdrop-blur-md transition-all shadow-lg cursor-pointer"
         >
-          <Layers className="w-4 h-4 text-sky-400" />
-          <span>{activeTile.label}</span>
+          <Layers className="w-3.5 h-3.5 text-sky-400" />
+          <span className="hidden sm:inline">{activeTile.label}</span>
         </button>
 
         {/* Toggle Footprint Circle */}
         <button
           onClick={() => setShowFootprint(!showFootprint)}
           title="Toggle Line-of-Sight Horizon Footprint"
-          className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold backdrop-blur-md border transition-all shadow-lg cursor-pointer ${
+          className={`flex items-center gap-2 px-2.5 py-1.5 rounded text-xs font-medium backdrop-blur-md border transition-all shadow-lg cursor-pointer ${
             showFootprint
-              ? 'bg-cyan-950/80 text-cyan-300 border-cyan-600/40'
+              ? 'bg-cyan-950/80 text-cyan-300 border-cyan-600/60'
               : 'bg-slate-900/90 text-slate-400 border-slate-800'
           }`}
         >
-          <Eye className="w-4 h-4 text-cyan-400" />
-          <span>Footprint</span>
+          <Eye className="w-3.5 h-3.5 text-cyan-400" />
+          <span className="hidden sm:inline">HORIZON</span>
         </button>
 
         {/* Toggle Ground Track */}
         <button
           onClick={() => setShowGroundTrack(!showGroundTrack)}
           title="Toggle Ground Track History Trail"
-          className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold backdrop-blur-md border transition-all shadow-lg cursor-pointer ${
+          className={`flex items-center gap-2 px-2.5 py-1.5 rounded text-xs font-medium backdrop-blur-md border transition-all shadow-lg cursor-pointer ${
             showGroundTrack
-              ? 'bg-cyan-950/80 text-cyan-300 border-cyan-600/40'
+              ? 'bg-cyan-950/80 text-cyan-300 border-cyan-600/60'
               : 'bg-slate-900/90 text-slate-400 border-slate-800'
           }`}
         >
-          <Navigation className="w-4 h-4 text-cyan-400" />
-          <span>Track Trail ({trackHistory.length})</span>
+          <Navigation className="w-3.5 h-3.5 text-cyan-400" />
+          <span className="hidden sm:inline">TRACK ({trackHistory.length})</span>
         </button>
-      </div>
-
-      {/* Floating Bottom Coordinates HUD */}
-      <div className="absolute bottom-4 left-4 z-20 flex items-center gap-3 px-3 py-2 rounded-xl bg-slate-950/90 border border-slate-800/90 text-xs font-mono backdrop-blur-md text-slate-300 shadow-xl">
-        <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
-          <span className="text-slate-400 uppercase tracking-wider text-[10px]">Position:</span>
-          <span className="text-cyan-300 font-bold">{fullStr}</span>
-        </div>
       </div>
     </div>
   );
